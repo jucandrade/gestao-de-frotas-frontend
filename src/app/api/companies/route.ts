@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+function getApiUrl() {
+  const url = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL;
+  if (!url) {
+    throw new Error("API_URL not configured");
+  }
+  return url.replace(/\/$/, "");
+}
 
 export async function GET() {
   try {
-    const response = await fetch(`${API_URL}/companies`);
+    const apiUrl = getApiUrl();
+    const response = await fetch(`${apiUrl}/companies`);
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
@@ -12,16 +19,18 @@ export async function GET() {
     }
 
     return NextResponse.json(data);
-  } catch {
-    return NextResponse.json({ message: "Falha de comunicação com o servidor." }, { status: 500 });
+  } catch (error) {
+    console.error("[GET /api/companies]", error);
+    return NextResponse.json({ message: "Falha de comunicação com o servidor." }, { status: 502 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    const apiUrl = getApiUrl();
     const body = await request.json();
 
-    const response = await fetch(`${API_URL}/companies`, {
+    const response = await fetch(`${apiUrl}/companies`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -34,10 +43,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(data, { status: response.status });
-  } catch {
+  } catch (error) {
+    console.error("[POST /api/companies]", error);
     return NextResponse.json(
       { message: "Falha de comunicação com o servidor." },
-      { status: 500 }
+      { status: 502 }
     );
   }
 }

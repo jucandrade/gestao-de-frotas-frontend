@@ -28,8 +28,6 @@ export interface Company {
   email?: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export async function getCompanies(): Promise<Company[]> {
   const response = await fetch(`/api/companies`);
 
