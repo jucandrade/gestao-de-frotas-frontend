@@ -1,10 +1,7 @@
 import { CompanyFormData } from "../schemas/company.schema";
 
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
-
 export async function createCompany(data: CompanyFormData): Promise<void> {
-  const response = await fetch(`${API_URL}/companies`, {
+  const response = await fetch(`/api/companies`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
