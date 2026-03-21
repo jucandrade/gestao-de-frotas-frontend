@@ -28,8 +28,10 @@ export interface Company {
   email?: string;
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export async function getCompanies(): Promise<Company[]> {
-  const response = await fetch("/api/companies");
+  const response = await fetch(`${API_URL}/companies`);
 
   if (!response.ok) {
     const error = await response.json();
@@ -40,7 +42,7 @@ export async function getCompanies(): Promise<Company[]> {
 }
 
 export async function getCompany(id: string): Promise<Company> {
-  const response = await fetch(`/api/companies/${id}`);
+  const response = await fetch(`${API_URL}/companies/${id}`);
 
   if (!response.ok) {
     const error = await response.json();
@@ -51,7 +53,7 @@ export async function getCompany(id: string): Promise<Company> {
 }
 
 export async function updateCompany(id: string, data: Partial<Company>): Promise<Company> {
-  const response = await fetch(`/api/companies/${id}`, {
+  const response = await fetch(`${API_URL}/companies/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -66,7 +68,7 @@ export async function updateCompany(id: string, data: Partial<Company>): Promise
 }
 
 export async function deleteCompany(id: string): Promise<void> {
-  const response = await fetch(`/api/companies/${id}`, {
+  const response = await fetch(`${API_URL}/companies/${id}`, {
     method: "DELETE",
   });
 
