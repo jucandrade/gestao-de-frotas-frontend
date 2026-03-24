@@ -29,7 +29,7 @@ export interface Company {
 }
 
 export async function getCompanies(): Promise<Company[]> {
-  const response = await fetch(`/api/companies`);
+  const response = await fetch("/api/companies");
 
   if (!response.ok) {
     const error = await response.json();

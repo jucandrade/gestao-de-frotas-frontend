@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
-function getApiUrl() {
-  const url = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL;
-  if (!url) {
-    throw new Error("API_URL not configured");
-  }
-  return url.replace(/\/$/, "");
-}
+const API_URL = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const apiUrl = getApiUrl();
     const { id } = await params;
-    const response = await fetch(`${apiUrl}/companies/${id}`);
+    const response = await fetch(`${API_URL}/companies/${id}`);
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
@@ -20,19 +13,17 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     }
 
     return NextResponse.json(data);
-  } catch (error) {
-    console.error(`[GET /api/companies/:id]`, error);
-    return NextResponse.json({ message: "Falha de comunicação com o servidor." }, { status: 502 });
+  } catch {
+    return NextResponse.json({ message: "Falha de comunicação com o servidor." }, { status: 500 });
   }
 }
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const apiUrl = getApiUrl();
     const { id } = await params;
     const body = await request.json();
 
-    const response = await fetch(`${apiUrl}/companies/${id}`, {
+    const response = await fetch(`${API_URL}/companies/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -45,17 +36,15 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     return NextResponse.json(data);
-  } catch (error) {
-    console.error(`[PUT /api/companies/:id]`, error);
-    return NextResponse.json({ message: "Falha de comunicação com o servidor." }, { status: 502 });
+  } catch {
+    return NextResponse.json({ message: "Falha de comunicação com o servidor." }, { status: 500 });
   }
 }
 
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const apiUrl = getApiUrl();
     const { id } = await params;
-    const response = await fetch(`${apiUrl}/companies/${id}`, { method: "DELETE" });
+    const response = await fetch(`${API_URL}/companies/${id}`, { method: "DELETE" });
 
     if (!response.ok) {
       const data = await response.json().catch(() => null);
@@ -63,8 +52,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
     }
 
     return NextResponse.json({ message: "Empresa excluída com sucesso" });
-  } catch (error) {
-    console.error(`[DELETE /api/companies/:id]`, error);
-    return NextResponse.json({ message: "Falha de comunicação com o servidor." }, { status: 502 });
+  } catch {
+    return NextResponse.json({ message: "Falha de comunicação com o servidor." }, { status: 500 });
   }
 }

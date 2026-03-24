@@ -84,11 +84,15 @@ export default function CompanyForm() {
   });
 
   async function handleNext() {
-    const fieldsToValidate = STEP_FIELDS[currentStep];
-    const isValid = await form.trigger(fieldsToValidate);
+    try {
+      const fieldsToValidate = STEP_FIELDS[currentStep];
+      const isValid = await form.trigger(fieldsToValidate);
 
-    if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+      if (isValid) {
+        setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+      }
+    } catch (error) {
+      console.error("Validation error:", error);
     }
   }
 
@@ -99,7 +103,8 @@ export default function CompanyForm() {
   async function onSubmit(data: CompanyFormData) {
     setIsSubmitting(true);
     try {
-      await createCompany(data);
+      const payload = { ...data, cnpj: data.cnpj.replace(/\D/g, "") };
+      await createCompany(payload);
       toast.success("Empresa cadastrada com sucesso!");
       form.reset();
       setCurrentStep(0);

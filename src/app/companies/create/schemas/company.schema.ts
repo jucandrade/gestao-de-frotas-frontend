@@ -14,8 +14,10 @@ export const companySchema = z.object({
   cnpj: z
     .string()
     .min(1, "CNPJ é obrigatório")
-    .transform((val) => val.replace(/\D/g, ""))
-    .pipe(z.string().regex(/^\d{14}$/, "CNPJ deve conter 14 dígitos numéricos")),
+    .refine(
+      (val) => val.replace(/\D/g, "").length === 14,
+      "CNPJ deve conter 14 dígitos numéricos"
+    ),
   stateRegistration: optionalString,
   municipalRegistration: optionalString,
   cnae: optionalString,

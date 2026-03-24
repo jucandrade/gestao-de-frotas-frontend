@@ -1,11 +1,9 @@
 import { CompanyFormData } from "../schemas/company.schema";
 
-export async function createCompany(data: CompanyFormData): Promise<void> {
-  const response = await fetch(`/api/companies`, {
+export async function createCompany(data: CompanyFormData) {
+  const response = await fetch("/api/companies", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
 
