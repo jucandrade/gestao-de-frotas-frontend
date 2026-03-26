@@ -49,6 +49,7 @@ const STEP_FIELDS: Record<number, (keyof CompanyFormData)[]> = {
 export default function CompanyForm() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
 
   const form = useForm<CompanyFormData>({
     resolver: zodResolver(companySchema),
@@ -85,14 +86,28 @@ export default function CompanyForm() {
 
   async function handleNext() {
     try {
+      setIsValidating(true);
       const fieldsToValidate = STEP_FIELDS[currentStep];
       const isValid = await form.trigger(fieldsToValidate);
 
       if (isValid) {
         setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+      } else {
+        // Get the first error message to show to user
+        const errors = form.formState.errors;
+        const firstError = Object.values(errors)
+          .find((field) => field?.message)?.message as string | undefined;
+        if (firstError) {
+          toast.error(firstError);
+        } else {
+          toast.error("Por favor, preencha os campos obrigatórios corretamente.");
+        }
       }
     } catch (error) {
       console.error("Validation error:", error);
+      toast.error("Erro ao validar formulário. Tente novamente.");
+    } finally {
+      setIsValidating(false);
     }
   }
 
@@ -207,9 +222,35 @@ export default function CompanyForm() {
             <button
               type="button"
               onClick={handleNext}
-              className="rounded-lg bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+              disabled={isValidating}
+              className="flex items-center gap-2 rounded-lg bg-black px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Próximo
+              {isValidating ? (
+                <>
+                  <svg
+                    className="h-4 w-4 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    />
+                  </svg>
+                  Validando...
+                </>
+              ) : (
+                "Próximo"
+              )}
             </button>
           ) : (
             <button

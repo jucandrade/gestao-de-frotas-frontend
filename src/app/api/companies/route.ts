@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { API_URL, getAuthHeader } from "@/lib/api-proxy";
 
-const API_URL = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
-
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const response = await fetch(`${API_URL}/companies`);
+    const response = await fetch(`${API_URL}/companies`, {
+      headers: { ...getAuthHeader(request) },
+    });
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
@@ -13,7 +14,10 @@ export async function GET() {
 
     return NextResponse.json(data);
   } catch {
-    return NextResponse.json({ message: "Falha de comunicação com o servidor." }, { status: 500 });
+    return NextResponse.json(
+      { message: `Falha de comunicação com o backend em ${API_URL}.` },
+      { status: 500 }
+    );
   }
 }
 
@@ -23,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     const response = await fetch(`${API_URL}/companies`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getAuthHeader(request) },
       body: JSON.stringify(body),
     });
 
@@ -36,7 +40,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data, { status: response.status });
   } catch {
     return NextResponse.json(
-      { message: "Falha de comunicação com o servidor." },
+      { message: `Falha de comunicação com o backend em ${API_URL}.` },
       { status: 500 }
     );
   }

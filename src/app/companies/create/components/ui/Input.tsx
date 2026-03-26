@@ -23,6 +23,17 @@ function applyMask(raw: string, mask: string): string {
   return result;
 }
 
+function setRef<T>(ref: React.Ref<T> | undefined, value: T | null) {
+  if (typeof ref === "function") {
+    ref(value);
+    return;
+  }
+
+  if (ref) {
+    (ref as React.MutableRefObject<T | null>).current = value;
+  }
+}
+
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, name, mask, error, register, disabled, placeholder, icon, ...rest }, _ref) => {
     const baseClassName =
@@ -31,6 +42,13 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     if (mask && register) {
       const { onChange, onBlur, name: fieldName, ref } = register;
+
+      const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const formatted = applyMask(e.currentTarget.value, mask);
+        e.currentTarget.value = formatted;
+        onChange(e);
+      };
+
       return (
         <div className="flex flex-col gap-1.5">
           <label htmlFor={name} className="text-sm font-medium text-gray-700">
@@ -44,18 +62,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             ) : null}
             <input
               id={name}
-              ref={ref}
+              ref={(element) => {
+                setRef(ref, element);
+                setRef(_ref, element);
+              }}
               name={fieldName}
               disabled={disabled}
               placeholder={placeholder}
               className={`${baseClassName} ${icon ? "pl-10" : ""}`}
-              onChange={(e) => {
-                const formatted = applyMask(e.target.value, mask);
-                e.target.value = formatted;
-                onChange(e);
-              }}
-              onBlur={onBlur}
               {...rest}
+              onChange={handleInputChange}
+              onBlur={onBlur}
             />
           </div>
           {error && <span className="text-xs text-red-500">{error}</span>}

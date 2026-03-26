@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { API_URL, getAuthHeader } from "@/lib/api-proxy";
 
-const API_URL = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
-
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const response = await fetch(`${API_URL}/companies/${id}`);
+    const response = await fetch(`${API_URL}/companies/${id}`, {
+      headers: { ...getAuthHeader(request) },
+    });
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
@@ -25,7 +26,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     const response = await fetch(`${API_URL}/companies/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getAuthHeader(request) },
       body: JSON.stringify(body),
     });
 
@@ -41,10 +42,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   }
 }
 
-export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const response = await fetch(`${API_URL}/companies/${id}`, { method: "DELETE" });
+    const response = await fetch(`${API_URL}/companies/${id}`, {
+      method: "DELETE",
+      headers: { ...getAuthHeader(request) },
+    });
 
     if (!response.ok) {
       const data = await response.json().catch(() => null);

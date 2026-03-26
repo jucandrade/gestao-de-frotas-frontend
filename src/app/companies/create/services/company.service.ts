@@ -8,8 +8,11 @@ export async function createCompany(data: CompanyFormData) {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw error;
+    const error = await response.json().catch(() => null);
+    const message = error?.message || `Erro HTTP ${response.status}`;
+    const err = new Error(message);
+    (err as Error & { statusCode?: number }).statusCode = response.status;
+    throw err;
   }
 
   return response.json();

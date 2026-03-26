@@ -29,49 +29,89 @@ export interface Company {
 }
 
 export async function getCompanies(): Promise<Company[]> {
-  const response = await fetch("/api/companies");
+  try {
+    const response = await fetch("/api/companies");
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw error;
+    if (!response.ok) {
+      const error = await response.json().catch(() => null);
+      const message = error?.message || `Erro HTTP ${response.status}`;
+      const err = new Error(message);
+      (err as any).statusCode = response.status;
+      throw err;
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("Erro ao comunicar com o servidor");
   }
-
-  return response.json();
 }
 
 export async function getCompany(id: string): Promise<Company> {
-  const response = await fetch(`/api/companies/${id}`);
+  try {
+    const response = await fetch(`/api/companies/${id}`);
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw error;
+    if (!response.ok) {
+      const error = await response.json().catch(() => null);
+      const message = error?.message || `Erro HTTP ${response.status}`;
+      const err = new Error(message);
+      (err as any).statusCode = response.status;
+      throw err;
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("Erro ao comunicar com o servidor");
   }
-
-  return response.json();
 }
 
 export async function updateCompany(id: string, data: Partial<Company>): Promise<Company> {
-  const response = await fetch(`/api/companies/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  try {
+    const response = await fetch(`/api/companies/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw error;
+    if (!response.ok) {
+      const error = await response.json().catch(() => null);
+      const message = error?.message || `Erro HTTP ${response.status}`;
+      const err = new Error(message);
+      (err as any).statusCode = response.status;
+      throw err;
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("Erro ao comunicar com o servidor");
   }
-
-  return response.json();
 }
 
 export async function deleteCompany(id: string): Promise<void> {
-  const response = await fetch(`/api/companies/${id}`, {
-    method: "DELETE",
-  });
+  try {
+    const response = await fetch(`/api/companies/${id}`, {
+      method: "DELETE",
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw error;
+    if (!response.ok) {
+      const error = await response.json().catch(() => null);
+      const message = error?.message || `Erro HTTP ${response.status}`;
+      const err = new Error(message);
+      (err as any).statusCode = response.status;
+      throw err;
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("Erro ao comunicar com o servidor");
   }
 }

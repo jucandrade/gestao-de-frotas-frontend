@@ -38,8 +38,11 @@ export default function CompanyTable() {
       setLoading(true);
       const data = await getCompanies();
       setCompanies(data);
-    } catch {
-      toast.error("Erro ao carregar empresas.");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Erro ao carregar empresas.";
+      console.error("Failed to load companies:", error);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -54,19 +57,24 @@ export default function CompanyTable() {
       setDeleteOpen(false);
       setSelectedCompany(null);
       await loadCompanies();
-    } catch {
-      toast.error("Erro ao excluir empresa.");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Erro ao excluir empresa.";
+      console.error("Failed to delete company:", error);
+      toast.error(message);
     } finally {
       setDeleting(false);
     }
   }
 
   const filtered = companies.filter((c) => {
-    const term = search.toLowerCase();
+    const term = search.toLowerCase().trim();
+    const cnpjTerm = search.replace(/\D/g, "");
+
     return (
       c.companyName?.toLowerCase().includes(term) ||
       c.tradeName?.toLowerCase().includes(term) ||
-      c.cnpj?.includes(search.replace(/\D/g, ""))
+      (cnpjTerm.length > 0 && c.cnpj?.includes(cnpjTerm))
     );
   });
 
