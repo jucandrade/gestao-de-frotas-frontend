@@ -97,13 +97,12 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
                     </Link>
                   </li>
                   <li>
-                    <button
-                      type="button"
-                      disabled
-                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-400"
+                    <Link
+                      href="/suppliers"
+                      className={navItemClass(pathname.startsWith("/suppliers"))}
                     >
-                      {collapsed ? "For" : "Fornecedores (em breve)"}
-                    </button>
+                      {collapsed ? "For" : "Fornecedores"}
+                    </Link>
                   </li>
                 </ul>
               ) : null}
