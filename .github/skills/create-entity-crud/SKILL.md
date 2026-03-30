@@ -142,6 +142,14 @@ export default function Create<Entity>Page() {
 
 Run `npm run build` to confirm no TypeScript or compilation errors.
 
+### 10. Atualizar Chat SYSTEM_PROMPT (backend)
+
+Adicione o novo módulo na constante `SYSTEM_PROMPT` em `gestao-de-frotas-back-end/src/chat/chat.service.ts`, na seção "Módulos disponíveis no sistema:", com o formato:
+```
+- **Nome do Módulo** (/rota) – Descrição breve da funcionalidade.
+```
+Isso garante que o assistente de chat conheça a nova funcionalidade e possa ajudar os usuários.
+
 ## Reference Implementation
 
 See `src/app/companies/create/` for a complete working example of this pattern.
