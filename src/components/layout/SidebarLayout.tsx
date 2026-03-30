@@ -26,7 +26,7 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/");
+    router.push("/login");
   }
 
   return (
